@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "812847410564",
+    "project_id": "farmicon-d4994",
+    "storage_bucket": "farmicon-d4994.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812847410564:android:1ba886ce413a0244c241d1",
+        "android_client_info": {
+          "package_name": "com.example.farmicon_frontend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812847410564-uipsm05gr1acn1badrlm2s0feb0h43cb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.farmicon_frontend",
+            "certificate_hash": "99c72b27f4fe6205282513d557bcf86781d05e4c"
+          }
+        },
+        {
+          "client_id": "812847410564-djpemj8k6gr23katma1rkc53j55lok88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDR4ma0hFU-wXK6PkmMoOg_FSXpFD5O07A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812847410564-djpemj8k6gr23katma1rkc53j55lok88.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

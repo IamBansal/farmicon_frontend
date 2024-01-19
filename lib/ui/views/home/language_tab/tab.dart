@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import '../../../../app_localizations.dart';
+import '../../../../services/app_localizations.dart';
 import '../../../../constants/app_assets.dart';
 import '../../../../viewmodels/home.dart';
 import '../../../app_theme.dart';

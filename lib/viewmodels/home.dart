@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../app_localizations.dart';
+import '../services/app_localizations.dart';
 import '../config/environment_config.dart';
 import '../constants/enums/view_state.dart';
 import '../models/address.dart';

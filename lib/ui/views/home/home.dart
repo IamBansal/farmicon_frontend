@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../app_localizations.dart';
+import '../../../services/app_localizations.dart';
 import '../../../utils/nav_utils.dart';
 import '../../../viewmodels/home.dart';
 import '../../app_theme.dart';

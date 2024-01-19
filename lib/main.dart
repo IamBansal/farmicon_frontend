@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:farmicon_frontend/app_localizations.dart';
+import 'package:farmicon/services/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

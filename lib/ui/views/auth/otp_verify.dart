@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import '../../../app_localizations.dart';
+import '../../../services/app_localizations.dart';
 import '../../../viewmodels/otp_verify.dart';
 import '../../app_theme.dart';
 import '../../base.dart';

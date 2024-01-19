@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import '../../../app_localizations.dart';
+import '../../../services/app_localizations.dart';
 import '../../../constants/app_assets.dart';
 import '../../../viewmodels/login.dart';
 import '../../app_theme.dart';

@@ -1,6 +1,6 @@
-import 'package:farmicon_frontend/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../core/locator.dart';
+import '../services/app_localizations.dart';
 import '../services/local_storage.dart';
 
 class LanguageProvider extends ChangeNotifier {

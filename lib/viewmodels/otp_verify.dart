@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import '../app_localizations.dart';
+import '../services/app_localizations.dart';
 import '../core/router.dart';
 import '../services/location.dart';
 import 'base.dart';

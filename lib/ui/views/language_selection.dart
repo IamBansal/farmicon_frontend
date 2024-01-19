@@ -1,10 +1,10 @@
-import 'package:farmicon_frontend/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../constants/app_assets.dart';
 import '../../core/router.dart';
+import '../../services/app_localizations.dart';
 import '../../viewmodels/language_selection.dart';
 import '../app_theme.dart';
 import '../base.dart';

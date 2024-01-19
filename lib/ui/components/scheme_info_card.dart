@@ -1,10 +1,10 @@
-import 'package:farmicon_frontend/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../config/environment_config.dart';
 import '../../models/scheme_info.dart';
+import '../../services/app_localizations.dart';
 import '../app_theme.dart';
 import 'image.dart';
 import 'text.dart';

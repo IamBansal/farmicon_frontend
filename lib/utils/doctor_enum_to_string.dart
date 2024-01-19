@@ -1,6 +1,6 @@
-import 'package:farmicon_frontend/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../models/doctor_result.dart';
+import '../services/app_localizations.dart';
 
 String enumToString(ResultStatus status, BuildContext context) {
   if (status == ResultStatus.pending) {

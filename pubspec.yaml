@@ -1,4 +1,4 @@
-name: farmicon_frontend
+name: farmicon
 description: A new Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -49,7 +49,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
 
 flutter:
@@ -93,3 +93,8 @@ flutter:
           weight: 700
         - asset: assets/fonts/Lato-Black.ttf
           weight: 900
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/launch/legacy_icon.png"

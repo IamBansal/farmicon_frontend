@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../../../../models/crop_analysis.dart';
 import '../../../../services/app_localizations.dart';
 import '../../../../config/environment_config.dart';
 import '../../../../constants/app_assets.dart';

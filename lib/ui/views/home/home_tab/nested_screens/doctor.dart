@@ -6,6 +6,7 @@ class DoctorSubpage extends StatelessWidget {
   }
 
   final HomeViewModel model;
+  final _plantController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +70,60 @@ class DoctorSubpage extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: 20.r,),
+                SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              // height: 50,
+              child: TextField(
+                controller: _plantController,
+                decoration: InputDecoration(
+                  fillColor: const Color(0xFFDFDFDF),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide:
+                    const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide:
+                    const BorderSide(color: Colors.black),
+                  ),
+                  hintText: 'Plant name',
+                  hintStyle: const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.grey,
+                  ),
+                  hintMaxLines: 1,
+                  labelText: 'Plant name',
+                  labelStyle: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16.0,
+                  ),
+                ),
+                textAlignVertical: TextAlignVertical.center,
+                style: const TextStyle(color: Colors.black),
+                maxLines: 1,
+                minLines: 1,
+              ),
+            ),
                 SizedBox(height: 20.r),
                 ElevatedButton(
                   onPressed: () async {
-                    final XFile? photo = await ImagePicker()
-                        .pickImage(source: ImageSource.camera);
+                    final XFile? photo = await ImagePicker().pickImage(source: ImageSource.camera);
 
                     if (photo == null) {
-                      // Get.rawSnackbar(message: S.current.photoNotTaken);
+                      Get.rawSnackbar(message: 'Photo not taken');
                     } else {
                       try {
-                        await model.sendPhotoForAnalysis(photo);
-                        // Get.rawSnackbar(message: S.current.photoSent);
+                        if(_plantController.text.isNotEmpty) {
+                          _plantController.text = '';
+                          Get.rawSnackbar(message: 'Photo sent for analysis');
+                          await model.sendPhotoForAnalysis(photo.path, 'apple');
+                        } else{
+                          Get.rawSnackbar(message: 'Enter plant type as well');
+                        }
                       } catch (exception) {
-                        // Get.rawSnackbar(message: S.current.photoSendingFailure);
+                        Get.rawSnackbar(message: 'Unable to send photo for analysis');
                       }
                     }
                   },
@@ -109,7 +150,7 @@ class DoctorSubpage extends StatelessWidget {
       );
     }
 
-    Widget buildResultsCard(DoctorResult result) {
+    Widget buildResultsCard(CropAnalysis result) {
       return Padding(
         padding: EdgeInsets.only(bottom: 16.r),
         child: Material(
@@ -123,7 +164,7 @@ class DoctorSubpage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 AImage(
-                  ENV.BASE_URL + result.imageUrl,
+                  ENV.BASE_URL + result.image,
                   width: 65.r,
                 ),
                 SizedBox(width: 20.r),
@@ -133,33 +174,33 @@ class DoctorSubpage extends StatelessWidget {
                     Row(
                       children: <Widget>[
                         AText(
-                          result.name,
+                          result.disease,
                           style: AppTheme.vendorDataTitleStyle,
                         ),
                         SizedBox(width: 10.r),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: (result.status == ResultStatus.complete)
-                                ? const Color(0xFF34A853)
-                                : AppTheme.tertiary,
-                            borderRadius: BorderRadius.circular(22.r),
-                          ),
-                          height: 16.r,
-                          width: (result.status == ResultStatus.complete)
-                              ? 48.r
-                              : 42.r,
-                          alignment: Alignment.center,
-                          child: Text(
-                            enumToString(result.status, context),
-                            style: AppTheme.cropDoctorResultStateStyle,
-                          ),
-                        ),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: (result.status == ResultStatus.complete)
+                        //         ? const Color(0xFF34A853)
+                        //         : AppTheme.tertiary,
+                        //     borderRadius: BorderRadius.circular(22.r),
+                        //   ),
+                        //   height: 16.r,
+                        //   width: (result.status == ResultStatus.complete)
+                        //       ? 48.r
+                        //       : 42.r,
+                        //   alignment: Alignment.center,
+                        //   child: Text(
+                        //     enumToString(result.status, context),
+                        //     style: AppTheme.cropDoctorResultStateStyle,
+                        //   ),
+                        // ),
                       ],
                     ),
                     SizedBox(
                       width: 200.r,
                       child: AText(
-                        result.content ?? AppLocalization.of(context).getTranslatedValue('waitingForAnalysis').toString(),
+                        result.treatment,
                         style: AppTheme.cropDoctorResultsStyle,
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
@@ -167,7 +208,7 @@ class DoctorSubpage extends StatelessWidget {
                       ),
                     ),
                     AText(
-                      result.dateTime.toString(),
+                      result.plant_name.toString(),
                       // DateFormat('h:m a, d MMM').format(result.dateTime),
                       style: AppTheme.readMoreStyle
                           .copyWith(decoration: TextDecoration.none),

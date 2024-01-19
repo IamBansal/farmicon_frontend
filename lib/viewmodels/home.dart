@@ -1,15 +1,14 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:dart_strapi/dart_strapi.dart';
+import 'package:farmicon/models/crop_analysis.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import '../services/app_localizations.dart';
 import '../config/environment_config.dart';
 import '../constants/enums/view_state.dart';
 import '../models/address.dart';
 import '../models/crop_price.dart';
-import '../models/doctor_result.dart';
 import '../models/scheme_info.dart';
 import '../models/user.dart';
 import '../models/vendor_data.dart';
@@ -21,6 +20,7 @@ import '../ui/views/home/home_tab/tab.dart';
 import '../ui/views/home/profile_tab/tab.dart';
 import '../utils/user_to_json.dart';
 import 'language_selection.dart';
+import 'package:http/http.dart' as http;
 
 class HomeViewModel extends LanguageSelectionViewModel {
   // Data
@@ -39,6 +39,30 @@ class HomeViewModel extends LanguageSelectionViewModel {
   Weather weather = Weather(date: DateTime.now());
   List<Weather> forecast = [];
 
+  CropAnalysis analysis = CropAnalysis(image: '', disease: '', plant_name: '', treatment: '');
+
+  Future<void> sendPhotoForAnalysis(String imageFile, String plantName) async {
+    String apiUrl = 'http://3.110.178.72:8001/predict';
+    var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+    request.fields['plant_type'] = plantName;
+    var file = await http.MultipartFile.fromPath('image', imageFile);
+    request.files.add(file);
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> responseMap = json.decode(responseBody);
+        doctorResults.add(CropAnalysis.fromMap(responseMap));
+        notifyListeners();
+      } else {
+        debugPrint('Error: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      debugPrint('Error: $error');
+    }
+  }
+
   List<SchemeInfo> govSchemes = <SchemeInfo>[], orgFarmingTips = <SchemeInfo>[];
 
   List<VendorData> warehouses = <VendorData>[],
@@ -46,7 +70,8 @@ class HomeViewModel extends LanguageSelectionViewModel {
       insuranceCenters = <VendorData>[],
       soilTestingCenters = <VendorData>[];
 
-  List<DoctorResult> doctorResults = [];
+  List<CropAnalysis> doctorResults = [];
+  // List<DoctorResult> doctorResults = [];
 
   List<CropPrice>? allCrops, pricesToShow, cropsToShow;
 
@@ -313,10 +338,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
     setState(ViewState.idle);
   }
 
-  Future<void> sendPhotoForAnalysis(XFile photo) async {
-    // TODO
-  }
-
   // Initializers
   void onModelReady() async {
     await fetchAndSyncUser();
@@ -484,7 +505,7 @@ class HomeViewModel extends LanguageSelectionViewModel {
           // "sort[1]": ""
         },
       );
-      doctorResults = doctorResultListFromJsonList(result.data!);
+      // doctorResults = doctorResultListFromJsonList(result.data!);
       notifyListeners();
     } catch (exception) {
       setState(ViewState.error);

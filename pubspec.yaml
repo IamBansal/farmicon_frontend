@@ -45,6 +45,7 @@ dependencies:
   internet_connection_checker: ^1.0.0+1
   dio: ^5.4.0
   solar_calculator: ^1.0.3
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

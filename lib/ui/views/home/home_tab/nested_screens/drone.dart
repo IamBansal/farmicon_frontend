@@ -107,54 +107,141 @@ class DroneSubpage extends StatelessWidget {
 
     final model = Provider.of<HomeViewModel>(context, listen: true);
 
-    return ListView(
-      children: <Widget>[
-        // buildInfoHeader(model),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              25.r,
-              12.r,
-              32.r,
-              15.r,
-            ),
-            child: AText(
-              AppLocalization.of(context).getTranslatedValue('droneCenterSectionHeader').toString(),
-              style: AppTheme.h3.copyWith(
-                color: AppTheme.text,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+    // return ListView(
+    //   children: <Widget>[
+    //     // buildInfoHeader(model),
+    //     Align(
+    //       alignment: Alignment.centerLeft,
+    //       child: Padding(
+    //         padding: EdgeInsets.fromLTRB(
+    //           25.r,
+    //           12.r,
+    //           32.r,
+    //           15.r,
+    //         ),
+    //         child: AText(
+    //           AppLocalization.of(context).getTranslatedValue('droneCenterSectionHeader').toString(),
+    //           style: AppTheme.h3.copyWith(
+    //             color: AppTheme.text,
+    //             fontWeight: FontWeight.w600,
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     Padding(
+    //       padding: EdgeInsets.fromLTRB(15.r, 0, 15.r, 15.r),
+    //       child: Material(
+    //         elevation: 5,
+    //         borderRadius: BorderRadius.circular(8.r),
+    //         type: MaterialType.card,
+    //         color: AppTheme.dirtyWhite,
+    //         child: Padding(
+    //           padding: EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.r),
+    //           child: (model.droneCenters.isNotEmpty)
+    //               ? Column(
+    //                   mainAxisSize: MainAxisSize.min,
+    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                   children: List<Widget>.generate(
+    //                     model.droneCenters.length,
+    //                     (index) => VendorInfoCard(model.droneCenters[index]),
+    //                   ),
+    //                 )
+    //               : const Center(
+    //                   child: CircularProgressIndicator(
+    //                     color: AppTheme.primary,
+    //                   ),
+    //                 ),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
+    addMarkers();
+    return Scaffold(
+      body: GoogleMap(
+        onMapCreated: (controller) {
+          mapController = controller;
+          mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: markers.first.position, zoom: 12)));
+        },
+        initialCameraPosition: const CameraPosition(
+          target: LatLng(29.86468003990907, 77.89429986090441),
+          zoom: 12.0,
         ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(15.r, 0, 15.r, 15.r),
-          child: Material(
-            elevation: 5,
-            borderRadius: BorderRadius.circular(8.r),
-            type: MaterialType.card,
-            color: AppTheme.dirtyWhite,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.r),
-              child: (model.droneCenters.isNotEmpty)
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List<Widget>.generate(
-                        model.droneCenters.length,
-                        (index) => VendorInfoCard(model.droneCenters[index]),
-                      ),
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primary,
-                      ),
-                    ),
-            ),
+        markers: Set.from(markers),
+      ),
+    );
+  }
+
+  late GoogleMapController mapController;
+  List<Marker> markers = [];
+
+  void addMarkers() {
+    List<LatLng> coordinates = const [
+      LatLng(29.86864584837445, 77.87432967489508),
+      LatLng(29.873676641960163, 77.8761376188956),
+      LatLng(29.86468003990907, 77.89429986090441),
+      LatLng(29.841375650870205, 77.8362117315268),
+    ];
+
+    for (var coord in coordinates) {
+      markers.add(
+        Marker(
+          markerId: MarkerId(coord.toString()),
+          position: coord,
+          draggable: false,
+          infoWindow: InfoWindow(
+            title: 'Marker at (${coord.latitude}, ${coord.longitude})',
           ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed),
         ),
-      ],
+      );
+    }
+  }
+
+  final Location _location = Location();
+  late bool _serviceEnabled;
+  late PermissionStatus _permissionGranted;
+  late LocationData _currentLocation;
+
+  Future<void> _checkLocationPermission() async {
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+    _currentLocation = await _location.getLocation();
+
+    mapController.animateCamera(
+      CameraUpdate.newLatLng(LatLng(_currentLocation.latitude!, _currentLocation.longitude!)),
     );
   }
 }

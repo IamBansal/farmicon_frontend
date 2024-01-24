@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../../models/crop_analysis.dart';
@@ -21,6 +22,8 @@ import '../../../components/scheme_info_card.dart';
 import '../../../components/text.dart';
 import '../../../components/vendor_info_card.dart';
 import 'package:intl/intl.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 part 'components/crop_price.dart';
 part 'components/gov_schemes.dart';

@@ -46,6 +46,10 @@ dependencies:
   dio: ^5.4.0
   solar_calculator: ^1.0.3
   http: ^1.1.0
+  google_maps_flutter: ^2.5.3
+  location: ^5.0.3
+  flutter_dotenv: ^5.1.0
+  flutter_config: ^2.0.2
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +65,7 @@ flutter:
     - assets/lang/hi.json
     - assets/app/
     - assets/fonts/
+    - .env
   fonts:
     - family: Poppins
       fonts:

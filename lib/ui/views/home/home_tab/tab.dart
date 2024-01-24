@@ -12,9 +12,7 @@ import '../../../../services/app_localizations.dart';
 import '../../../../config/environment_config.dart';
 import '../../../../constants/app_assets.dart';
 import '../../../../models/crop_price.dart';
-import '../../../../models/doctor_result.dart';
 import '../../../../models/weather.dart';
-import '../../../../utils/doctor_enum_to_string.dart';
 import '../../../../viewmodels/home.dart';
 import '../../../app_theme.dart';
 import '../../../components/image.dart';
@@ -22,7 +20,6 @@ import '../../../components/scheme_info_card.dart';
 import '../../../components/text.dart';
 import '../../../components/vendor_info_card.dart';
 import 'package:intl/intl.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 part 'components/crop_price.dart';

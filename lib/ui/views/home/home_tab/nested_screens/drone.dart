@@ -158,19 +158,54 @@ class DroneSubpage extends StatelessWidget {
     // );
     addMarkers();
     return Scaffold(
-      body: GoogleMap(
-        onMapCreated: (controller) {
-          mapController = controller;
-          mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: markers.first.position, zoom: 12)));
-        },
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(29.86468003990907, 77.89429986090441),
-          zoom: 12.0,
-        ),
-        markers: Set.from(markers),
+      body: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: GoogleMap(
+              onMapCreated: (controller) {
+                mapController = controller;
+                mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: markers.first.position, zoom: 12)));
+              },
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(29.86468003990907, 77.89429986090441),
+                zoom: 12.0,
+              ),
+              markers: Set.from(markers),
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              physics: const BouncingScrollPhysics(),
+              itemCount: locations.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color(0xFFF3EDFD)),
+                  margin: const EdgeInsets.all(5),
+                  width: MediaQuery.of(context).size.width / 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+                    child: Center(child: Text(locations[index], textAlign: TextAlign.center,)),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  List<String> locations = const [
+    'Near Masjid, Azad Nagar, Rajendra Nagar, Roorkee, Shafipur, Uttarakhand 247667',
+    '22-23, Yadavpuri Rd, Ambedkar Nagar, Roorkee, Shafipur, Uttarakhand 247667',
+    'Indian Institute of Technology Roorkee, Roorkee, Uttarakhand 247667',
+    'Balelpur Majra Harjauli J, Uttarakhand 247667'
+  ];
 
   late GoogleMapController mapController;
   List<Marker> markers = [];

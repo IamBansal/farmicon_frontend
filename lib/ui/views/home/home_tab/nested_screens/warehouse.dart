@@ -156,19 +156,54 @@ class WarehouseSubpage extends StatelessWidget {
     // );
     addMarkers();
     return Scaffold(
-      body: GoogleMap(
-        onMapCreated: (controller) {
-          mapController = controller;
-          mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: markers.first.position, zoom: 12)));
-        },
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(29.87594898766918, 77.89665493774467),
-          zoom: 12.0,
-        ),
-        markers: Set.from(markers),
+      body: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: GoogleMap(
+              onMapCreated: (controller) {
+                mapController = controller;
+                mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: markers.first.position, zoom: 12)));
+              },
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(29.86468003990907, 77.89429986090441),
+                zoom: 12.0,
+              ),
+              markers: Set.from(markers),
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              physics: const BouncingScrollPhysics(),
+              itemCount: locations.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color(0xFFF3EDFD)),
+                  margin: const EdgeInsets.all(5),
+                  width: MediaQuery.of(context).size.width / 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+                    child: Center(child: Text(locations[index], textAlign: TextAlign.center,)),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  List<String> locations = const [
+    'Pathanpura, Roorkee, Uttarakhand 247667',
+    'Civil Lines, Roorkee, Uttarakhand 247667',
+    'Malakpur Latifpur, Uttarakhand 247667',
+    'Bagtowala Majra Dehat, Uttarakhand 247665'
+  ];
 
   late GoogleMapController mapController;
   List<Marker> markers = [];

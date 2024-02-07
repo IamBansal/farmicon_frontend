@@ -181,15 +181,23 @@ class DroneSubpage extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               itemCount: locations.length,
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xFFF3EDFD)),
-                  margin: const EdgeInsets.all(5),
-                  width: MediaQuery.of(context).size.width / 3,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
-                    child: Center(child: Text(locations[index], textAlign: TextAlign.center,)),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => SelectServiceLocation(location: locations[index], marker: markers[index])));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: const Color(0xFFF3EDFD)),
+                    margin: const EdgeInsets.all(5),
+                    width: MediaQuery.of(context).size.width / 3,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+                      child: Center(child: Text(locations[index], textAlign: TextAlign.center,)),
+                    ),
                   ),
                 );
               },
@@ -279,4 +287,324 @@ class DroneSubpage extends StatelessWidget {
       CameraUpdate.newLatLng(LatLng(_currentLocation.latitude!, _currentLocation.longitude!)),
     );
   }
+}
+
+class SelectServiceLocation extends StatefulWidget {
+  final String location;
+  final Marker marker;
+
+  const SelectServiceLocation({required this.location, required this.marker, super.key});
+
+  @override
+  State<SelectServiceLocation> createState() => _SelectServiceLocationState();
+}
+
+class _SelectServiceLocationState extends State<SelectServiceLocation> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(child: Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(widget.location, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, ), textAlign: TextAlign.center,),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                // height: 50,
+                child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    fillColor: const Color(0xFFDFDFDF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    hintText: 'Farmer name',
+                    hintStyle: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                    hintMaxLines: 1,
+                    labelText: 'Farmer name',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(color: Colors.black),
+                  maxLines: 1,
+                  minLines: 1,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                // height: 50,
+                child: TextField(
+                  controller: _locationController,
+                  decoration: InputDecoration(
+                    fillColor: const Color(0xFFDFDFDF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    hintText: 'Farm location',
+                    hintStyle: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                    hintMaxLines: 1,
+                    labelText: 'Location',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(color: Colors.black),
+                  maxLines: 1,
+                  minLines: 1,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                // height: 50,
+                child: TextField(
+                  controller: _areaController,
+                  decoration: InputDecoration(
+                    fillColor: const Color(0xFFDFDFDF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    hintText: 'Area size',
+                    hintStyle: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                    hintMaxLines: 1,
+                    labelText: 'Area size',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(color: Colors.black),
+                  maxLines: 1,
+                  minLines: 1,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                // height: 50,
+                child: TextField(
+                  controller: _cropController,
+                  decoration: InputDecoration(
+                    fillColor: const Color(0xFFDFDFDF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    hintText: 'Plant name',
+                    hintStyle: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                    hintMaxLines: 1,
+                    labelText: 'Plant name',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(color: Colors.black),
+                  maxLines: 1,
+                  minLines: 1,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                // height: 50,
+                child: TextField(
+                  controller: _dateController,
+                  decoration: InputDecoration(
+                    fillColor: const Color(0xFFDFDFDF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide:
+                      const BorderSide(color: Colors.black),
+                    ),
+                    hintText: 'Date of spray',
+                    hintStyle: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                    hintMaxLines: 1,
+                    labelText: 'Date',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(color: Colors.black),
+                  maxLines: 1,
+                  minLines: 1,
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                'Select a time slot for service',
+                style: TextStyle(
+                  fontSize: 18.0,
+                ),
+              ),
+            ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  alignment: WrapAlignment.center,
+                  spacing: 5.0,
+                  children: List<Widget>.generate(
+                    _slots.length,
+                        (int index) {
+                      return ChoiceChip(
+                        label: SizedBox(
+                            width: 80,
+                            child: Center(child: Text(_slots[index]))),
+                        selected: false,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            _selectedChipIndex = selected ? index : -1;
+                          });
+                        },
+                        backgroundColor: _selectedChipIndex == index
+                            ? AppTheme.primary
+                            : Colors.white,
+                        selectedColor: AppTheme.primary,
+                        labelStyle: TextStyle(
+                          color: _selectedChipIndex == index
+                              ? Colors.white
+                              : const Color(0xFF6B7280),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.5),
+                          side: const BorderSide(
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      );
+                    },
+                  ).toList(),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                'Do you want them to carry pesticides?',
+                style: TextStyle(
+                  fontSize: 18.0,
+                ),
+              ),
+            ),
+            RadioListTile(
+              activeColor: AppTheme.primary,
+              title: const Text('Yes'),
+              value: 'Yes',
+              groupValue: _selectedChoice,
+              onChanged: (value) {
+                setState(() {
+                  _selectedChoice = value!;
+                });
+              },
+            ),
+            RadioListTile(
+              activeColor: AppTheme.primary,
+              title: const Text('No'),
+              value: 'No',
+              groupValue: _selectedChoice,
+              onChanged: (value) {
+                setState(() {
+                  _selectedChoice = value!;
+                });
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22.r))),
+                textStyle: const MaterialStatePropertyAll(AppTheme.h3),
+              ),
+              child: const AText('Book Drone'),
+            ),
+          ],
+        ),
+      ),
+    ));
+  }
+
+  final _dateController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _areaController = TextEditingController();
+  final _cropController = TextEditingController();
+
+  final List<String> _slots = const ['8AM-10AM', '10AM-12PM','12PM-2PM','2PM-4PM','4PM-6PM'];
+  int _selectedChipIndex = 0;
+  String _selectedChoice = 'Yes';
+
 }

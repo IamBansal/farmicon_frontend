@@ -90,6 +90,7 @@ class OtpVerifyViewModel extends BaseViewModel {
         await _createUser();
 
         Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
+        Get.toNamed(AppRoutes.home);
       } catch (_) {
         Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
       }

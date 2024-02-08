@@ -156,7 +156,7 @@ class DroneSubpage extends StatelessWidget {
     //     ),
     //   ],
     // );
-    addMarkers();
+    addMarkers(context);
     return Scaffold(
       body: Column(
         children: [
@@ -218,7 +218,7 @@ class DroneSubpage extends StatelessWidget {
   late GoogleMapController mapController;
   List<Marker> markers = [];
 
-  void addMarkers() {
+  void addMarkers(BuildContext context) {
     List<LatLng> coordinates = const [
       LatLng(29.86864584837445, 77.87432967489508),
       LatLng(29.873676641960163, 77.8761376188956),
@@ -237,6 +237,13 @@ class DroneSubpage extends StatelessWidget {
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueRed),
+          onTap: () {
+            int index = markers.indexWhere((element) => element.position == coord);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SelectServiceLocation(location: locations[index], marker: markers[index])));
+          }
         ),
       );
     }
@@ -406,7 +413,7 @@ class _SelectServiceLocationState extends State<SelectServiceLocation> {
                       borderSide:
                       const BorderSide(color: Colors.black),
                     ),
-                    hintText: 'Area size',
+                    hintText: 'Area size in acres',
                     hintStyle: const TextStyle(
                       fontSize: 16.0,
                       color: Colors.grey,
@@ -419,6 +426,7 @@ class _SelectServiceLocationState extends State<SelectServiceLocation> {
                     ),
                   ),
                   textAlignVertical: TextAlignVertical.center,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   style: const TextStyle(color: Colors.black),
                   maxLines: 1,
                   minLines: 1,
@@ -493,11 +501,15 @@ class _SelectServiceLocationState extends State<SelectServiceLocation> {
                       color: Colors.grey,
                       fontSize: 16.0,
                     ),
+                    suffixIcon: IconButton(onPressed: () {
+                      selectDate(context);
+                    }, icon: const Icon(Icons.calendar_month_outlined)),
                   ),
                   textAlignVertical: TextAlignVertical.center,
                   style: const TextStyle(color: Colors.black),
                   maxLines: 1,
                   minLines: 1,
+                  readOnly: true,
                 ),
               ),
             ),
@@ -583,7 +595,9 @@ class _SelectServiceLocationState extends State<SelectServiceLocation> {
               },
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                bookDrone();
+              },
               style: ButtonStyle(
                 shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22.r))),
@@ -595,6 +609,75 @@ class _SelectServiceLocationState extends State<SelectServiceLocation> {
         ),
       ),
     ));
+  }
+
+  void bookDrone() async {
+
+    if(_dateController.text.isNotEmpty && _nameController.text.isNotEmpty && _locationController.text.isNotEmpty && _areaController.text.isNotEmpty && _cropController.text.isNotEmpty) {
+
+      String id = (FirebaseAuth.instance.currentUser?.uid)!;
+
+      try {
+        final firestore = FirebaseFirestore.instance.collection('dronesBooking');
+        DocumentReference newDoc = await firestore.add({
+          'date': _dateController.text,
+          'addedBy': id,
+          'crop': _cropController.text,
+          'name': _nameController.text,
+          'location': _locationController.text,
+          'area': _areaController.text,
+          'bookedOn': DateTime.now(),
+          'isPesticideRequired': _selectedChoice == 'Yes',
+          'timeSlot': _slots[_selectedChipIndex],
+          'droneCentre': widget.location,
+          'droneCentreLat': widget.marker.position.latitude.toString(),
+          'droneCentreLon': widget.marker.position.longitude.toString(),
+        });
+
+        await firestore.doc(newDoc.id).update({'bookingId': newDoc.id});
+
+        debugPrint('Drone Booked');
+        Fluttertoast.showToast(
+          msg: "Drone booking added to database, you will be notified once accepted by the service provider.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } catch (e) {
+        debugPrint('Error booking drone to Firestore: $e');
+        Fluttertoast.showToast(
+          msg: "Error booking drone",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "Fill all details first",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  void selectDate(BuildContext context) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 2),
+    );
+    if (selectedDate != null) {
+      _dateController.text = '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+    }
   }
 
   final _dateController = TextEditingController();

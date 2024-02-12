@@ -12,6 +12,11 @@ class ProfileSubpage extends StatelessWidget {
         ...buildMyCropsCard(context),
         ...buildLocationSection(context),
         ...buildLandAreaSection(context),
+        ElevatedButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut().whenComplete(() => Get.offAllNamed(AppRoutes.login));
+            },
+            child: const Text('Log Out'))
       ],
     );
   }

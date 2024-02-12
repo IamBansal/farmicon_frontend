@@ -46,22 +46,23 @@ class OtpVerifyViewModel extends BaseViewModel {
 
     _otpCode = '';
   }
+  final auth = FirebaseAuth.instance;
 
   void sendOtp(PhoneNumber phoneNumber, {bool isSecondTime = false}) {
-    FirebaseAuth.instance.verifyPhoneNumber(
+    auth.verifyPhoneNumber(
       phoneNumber: phoneNumber.completeNumber,
       verificationCompleted: (phoneAuthCredential) async {
-        _verificationId = phoneAuthCredential.verificationId;
-        if (phoneAuthCredential.smsCode != null) {
-          _otpCode = phoneAuthCredential.smsCode!;
-        }
-
-        await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
-
-        await _createUser();
-
-        Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
-        Get.offAllNamed(AppRoutes.languageSelection);
+        // _verificationId = phoneAuthCredential.verificationId;
+        // if (phoneAuthCredential.smsCode != null) {
+        //   _otpCode = phoneAuthCredential.smsCode!;
+        // }
+        //
+        // await auth.signInWithCredential(phoneAuthCredential);
+        //
+        // await _createUser();
+        //
+        // Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
+        // Get.offAllNamed(AppRoutes.languageSelection);
       },
       forceResendingToken: isSecondTime ? _resendToken : null,
       codeSent: (verificationId, resendToken) {
@@ -70,8 +71,8 @@ class OtpVerifyViewModel extends BaseViewModel {
       },
       codeAutoRetrievalTimeout: (_) {},
       timeout: const Duration(minutes: 2),
-      verificationFailed: (error) {
-        Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
+      verificationFailed: (FirebaseAuthException error) {
+        // Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
       },
     );
   }
@@ -85,7 +86,7 @@ class OtpVerifyViewModel extends BaseViewModel {
       );
 
       try {
-        await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
+        await auth.signInWithCredential(phoneAuthCredential);
 
         await _createUser();
 
@@ -107,7 +108,7 @@ class OtpVerifyViewModel extends BaseViewModel {
     final result = await FirebaseFirestore.instance
         .collection('users')
         .where('phone_number',
-            isEqualTo: FirebaseAuth.instance.currentUser!.phoneNumber)
+            isEqualTo: auth.currentUser!.phoneNumber)
         .get();
 
     if (result.docs.isEmpty) {
@@ -125,8 +126,8 @@ class OtpVerifyViewModel extends BaseViewModel {
             'crops-en': [],
             'crops-hi': [],
             'email': null,
-            'name': FirebaseAuth.instance.currentUser!.displayName,
-            'phone_number': FirebaseAuth.instance.currentUser!.phoneNumber,
+            'name': auth.currentUser!.displayName,
+            'phone_number': auth.currentUser!.phoneNumber,
           })
           .then((value) => debugPrint('DB USER CREATED'))
           .catchError((error) => debugPrint('db user creation failed'));

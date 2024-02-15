@@ -77,7 +77,7 @@ class OtpVerifyView extends StatelessWidget {
                   child: SizedBox(
                     width: 80.r,
                     child: TextButton(
-                      onPressed: model.submitOtp,
+                      onPressed: () {model.submitOtpViaAWS(_phoneNumber);},
                       style: ButtonStyle(
                         backgroundColor: model.otpCode.length >= 6
                             ? const MaterialStatePropertyAll(AppTheme.primary)

@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  aws_sns_api:
+    dependency: "direct main"
+    description:
+      name: aws_sns_api
+      sha256: "088d98e17f753d37a3bf73e57831ec662e5f1453b4bdd1b678e8521fc3f18504"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -449,10 +457,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_android
-      sha256: "06e37fa32392f69f133e166ef6b358a8b6afddbf4c418fc236988184cc115a49"
+      sha256: "93906636752ea4d4e778afa981fdfe7409f545b3147046300df194330044d349"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.1"
+    version: "4.3.1"
   geolocator_apple:
     dependency: transitive
     description:
@@ -617,10 +625,10 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
+      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "0.13.6"
   http_parser:
     dependency: transitive
     description:
@@ -833,10 +841,10 @@ packages:
     dependency: "direct main"
     description:
       name: osm_nominatim
-      sha256: "037f1af3abee92cf34e33b562cec1acbb0210234b1bdf3d8975bdef3849e6287"
+      sha256: "0e3b2a5bc0e40ae09d64475287de1f46564abe4e218cd2c506ef0bc0bcf85212"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "2.0.1"
   package_config:
     dependency: transitive
     description:
@@ -1029,6 +1037,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.14.0"
+  shared_aws_api:
+    dependency: transitive
+    description:
+      name: shared_aws_api
+      sha256: "24d036c3d125b9c5e516a97120b157359d2beb6f94ac9dd895ac0128839a979a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1106,14 +1122,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
-  sprintf:
-    dependency: transitive
-    description:
-      name: sprintf
-      sha256: "1fc9ffe69d4df602376b52949af107d8f5703b77cda567c4d7d86a0693120f23"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1238,10 +1246,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: "22c94e5ad1e75f9934b766b53c742572ee2677c56bc871d850a57dad0f82127f"
+      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.2"
+    version: "3.0.7"
   vector_graphics:
     dependency: transitive
     description:
@@ -1286,10 +1294,10 @@ packages:
     dependency: "direct main"
     description:
       name: weather
-      sha256: "5ad1d5b77051aa524049fc0abf1076ac4533e91e0176b0a4bab1182a2d6f921b"
+      sha256: "80642558610a8097956e603163fe648c14bb926beee52fe7cd78a44f37c53877"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "2.0.1"
   win32:
     dependency: transitive
     description:

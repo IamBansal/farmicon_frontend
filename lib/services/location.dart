@@ -18,7 +18,6 @@ class LocationService {
         limit: 1,
         language: languageCode,
       );
-      // print(result.length);
       return Point(result.first.lat, result.first.lon);
     }
   }

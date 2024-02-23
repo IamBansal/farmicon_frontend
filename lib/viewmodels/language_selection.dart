@@ -12,6 +12,12 @@ class LanguageSelectionViewModel extends BaseViewModel {
   // Getters
   String get languageCode => locator<LocalStorageService>().language;
 
+  // String id = '';
+  // void setId(String userId){
+  //   id = userId;
+  //   notifyListeners();
+  // }
+
   // Setters
   void onButtonPressed(
     String? newLanguageCode,

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../core/router.dart';
 import '../services/app_localizations.dart';
 import '../services/location.dart';
@@ -55,7 +56,7 @@ class LoginViewModel extends BaseViewModel {
       );
 
       await FirebaseAuth.instance.signInWithCredential(googleAuthCredential);
-
+      String id = FirebaseAuth.instance.currentUser!.uid;
       final result = await FirebaseFirestore.instance
           .collection('users')
           .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
@@ -73,6 +74,7 @@ class LoginViewModel extends BaseViewModel {
                 'pincode': int.tryParse(address?['postcode']) ?? 0,
                 'street_name': address?['street'] ?? '',
               },
+          'uid': id,
               'crops-en': [],
               'crops-hi': [],
               'email': FirebaseAuth.instance.currentUser!.email,
@@ -82,7 +84,8 @@ class LoginViewModel extends BaseViewModel {
             .then((value) => debugPrint('DB USER CREATED'))
             .catchError((error) => debugPrint('db user creation failed'));
       }
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('uid', id);
       Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
       Get.offAllNamed(AppRoutes.languageSelection);
     } else {

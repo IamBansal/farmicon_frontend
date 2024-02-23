@@ -14,10 +14,16 @@ class ProfileSubpage extends StatelessWidget {
         ...buildLandAreaSection(context),
         ElevatedButton(
             onPressed: () {
+              saveUid('');
               FirebaseAuth.instance.signOut().whenComplete(() => Get.offAllNamed(AppRoutes.login));
             },
             child: const Text('Log Out'))
       ],
     );
+  }
+
+  void saveUid(String id) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('uid', id);
   }
 }

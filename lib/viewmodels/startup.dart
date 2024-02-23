@@ -1,27 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../core/router.dart';
 import 'base.dart';
 
 class StartUpViewModel extends BaseViewModel {
-  //Initializers:
   Future<void> onModelReady() async {
-    //Wait for three seconds.
     await Future.delayed(const Duration(seconds: 3));
 
-    // Check for permissions.
     if ((await Permission.locationWhenInUse.status).isDenied) {
       debugPrint('is not granted');
       if (!(await Permission.locationWhenInUse.request()).isGranted) {
-        // Get.snackbar(
-        //   S.current.locationPermission,
-        //   S.current.locationPermissionRequest,
-        // );
-
         await Future.delayed(const Duration(seconds: 1));
-
         await Permission.locationWhenInUse.request();
       }
     }
@@ -29,7 +22,18 @@ class StartUpViewModel extends BaseViewModel {
     if (FirebaseAuth.instance.currentUser == null) {
       Get.offAndToNamed(AppRoutes.login);
     } else {
-      Get.offAndToNamed(AppRoutes.home);
+      // Get.offAndToNamed(AppRoutes.login);
+      String id = FirebaseAuth.instance.currentUser!.uid;
+      final result = await FirebaseFirestore.instance
+          .collection('users')
+          .where('uid', isEqualTo: id)
+          .get();
+      if(result.docs.isEmpty){
+        Get.offAndToNamed(AppRoutes.login);
+      } else {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('uid', id).whenComplete(() => Get.offAndToNamed(AppRoutes.home));
+      }
     }
   }
 }

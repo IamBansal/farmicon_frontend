@@ -2,21 +2,20 @@ import 'dart:async';
 import 'dart:math';
 import 'package:aws_sns_api/sns-2010-03-31.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmicon/viewmodels/language_selection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_localizations.dart';
 import '../core/router.dart';
 import '../services/location.dart';
-import 'base.dart';
 
-class OtpVerifyViewModel extends BaseViewModel {
+class OtpVerifyViewModel extends LanguageSelectionViewModel {
   // Data
-  int? _resendToken;
   late String _otpCode;
-  late String? _verificationId;
   late Duration _timer;
 
   String accessKey = dotenv.env['AWS_ACCESS_KEY'] ?? '';
@@ -45,7 +44,6 @@ class OtpVerifyViewModel extends BaseViewModel {
 
   // Initializer
   void onModelReady(PhoneNumber phoneNumber) {
-    // sendOtp(phoneNumber);
     sendOtpViaAWS(phoneNumber);
 
     _timer = const Duration(minutes: 2);
@@ -57,19 +55,22 @@ class OtpVerifyViewModel extends BaseViewModel {
 
   var otpMade = 100000 + Random().nextInt(900000);
   void sendOtpViaAWS(PhoneNumber phoneNumber){
-    otpMade = 100000 + Random().nextInt(900000);
-    final service = SNS(region: 'ap-south-1', credentials: AwsClientCredentials(accessKey: accessKey, secretKey: secretKey));
-    service.publish(message: 'Your OTp for log in to Farmicon is $otpMade\nThis otp is valid for 1 minute.', phoneNumber: '${phoneNumber.countryCode} ${phoneNumber.number}');
+    try{
+      otpMade = 100000 + Random().nextInt(900000);
+      final service = SNS(region: 'ap-south-1', credentials: AwsClientCredentials(accessKey: accessKey, secretKey: secretKey));
+      service.publish(message: 'Your OTP for log in to Farmicon is $otpMade\nThis otp is valid for 1 minute.', phoneNumber: '${phoneNumber.countryCode} ${phoneNumber.number}');
+    } catch(e){
+      debugPrint(e.toString());
+    }
   }
 
-  void submitOtpViaAWS(PhoneNumber phoneNumber) async {
+  void submitOtpViaAWS(PhoneNumber phoneNumber, BuildContext context) async {
     if (_otpCode == (otpMade.toString())){
       try {
-        await auth.signInAnonymously();
-        await _createUser(phoneNumber);
+        await _createUser(phoneNumber, context);
         Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
         Get.toNamed(AppRoutes.home);
-      } catch (_) {
+      } catch (e) {
         Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
       }
     } else {
@@ -77,71 +78,21 @@ class OtpVerifyViewModel extends BaseViewModel {
     }
   }
 
-  // void sendOtp(PhoneNumber phoneNumber, {bool isSecondTime = false}) {
-  //   auth.verifyPhoneNumber(
-  //     phoneNumber: phoneNumber.completeNumber,
-  //     verificationCompleted: (phoneAuthCredential) async {
-  //       // _verificationId = phoneAuthCredential.verificationId;
-  //       // if (phoneAuthCredential.smsCode != null) {
-  //       //   _otpCode = phoneAuthCredential.smsCode!;
-  //       // }
-  //       //
-  //       // await auth.signInWithCredential(phoneAuthCredential);
-  //       //
-  //       // await _createUser();
-  //       //
-  //       // Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
-  //       // Get.offAllNamed(AppRoutes.languageSelection);
-  //     },
-  //     forceResendingToken: isSecondTime ? _resendToken : null,
-  //     codeSent: (verificationId, resendToken) {
-  //       _verificationId = verificationId;
-  //       _resendToken = resendToken;
-  //     },
-  //     codeAutoRetrievalTimeout: (_) {},
-  //     timeout: const Duration(minutes: 2),
-  //     verificationFailed: (FirebaseAuthException error) {
-  //       // Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
-  //     },
-  //   );
-  // }
-  //
-  // // Misc
-  // void submitOtp() async {
-  //   if (_verificationId != null && _otpCode.length >= 6) {
-  //     final phoneAuthCredential = PhoneAuthProvider.credential(
-  //       verificationId: _verificationId!,
-  //       smsCode: _otpCode,
-  //     );
-  //
-  //     try {
-  //       await auth.signInWithCredential(phoneAuthCredential);
-  //
-  //       // await _createUser(pho);
-  //
-  //       Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('successSignIn').toString());
-  //       Get.toNamed(AppRoutes.home);
-  //     } catch (_) {
-  //       Get.rawSnackbar(message: AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
-  //     }
-  //   } else {
-  //     Get.rawSnackbar(message:AppLocalization.of(Get.context!).getTranslatedValue('errorSignIn').toString());
-  //   }
-  // }
-
   void resendOtp(PhoneNumber phoneNumber) {
-    // if (_resendToken != null) sendOtp(phoneNumber, isSecondTime: true);
     sendOtpViaAWS(phoneNumber);
   }
 
-  Future<void> _createUser(PhoneNumber phoneNumber) async {
+  Future<void> _createUser(PhoneNumber phoneNumber, BuildContext context) async {
     final result = await FirebaseFirestore.instance
         .collection('users')
         .where('phone_number', isEqualTo: phoneNumber.number)
         .get();
 
     if (result.docs.isEmpty) {
+      final authCred = await auth.signInAnonymously();
       final address = await LocationService.fetchAddress('en');
+
+      saveUid(auth.currentUser!.uid.toString());
 
       return FirebaseFirestore.instance
           .collection('users')
@@ -152,6 +103,7 @@ class OtpVerifyViewModel extends BaseViewModel {
               'pincode': int.tryParse(address?['postcode']) ?? 0,
               'street_name': address?['street'] ?? '',
             },
+        'uid': auth.currentUser!.uid.toString(),
             'crops-en': [],
             'crops-hi': [],
             'email': null,
@@ -160,6 +112,14 @@ class OtpVerifyViewModel extends BaseViewModel {
           })
           .then((value) => debugPrint('DB USER CREATED'))
           .catchError((error) => debugPrint('db user creation failed'));
+    } else {
+      saveUid(result.docs[0]['uid'].toString());
+      await auth.signInAnonymously();
     }
+  }
+
+  void saveUid(String id) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('uid', id);
   }
 }

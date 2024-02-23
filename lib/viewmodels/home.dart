@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmicon/models/crop_analysis.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_localizations.dart';
 import '../config/environment_config.dart';
 import '../constants/enums/view_state.dart';
@@ -71,11 +71,11 @@ class HomeViewModel extends LanguageSelectionViewModel {
       soilTestingCenters = <VendorData>[];
 
   List<CropAnalysis> doctorResults = [];
-  // List<DoctorResult> doctorResults = [];
 
   List<CropPrice>? allCrops, pricesToShow, cropsToShow;
 
   int _tabIndex = 0;
+  String id = '';
 
   int get tabIndex => _tabIndex;
 
@@ -103,7 +103,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
   }
 
   late User _user;
-
   User get user => _user;
 
   set user(User? newState) {
@@ -118,7 +117,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
     if (double.tryParse(newAreaQuantity) != null) {
      _user.areaQuantity = double.parse(newAreaQuantity);
      user = _user;
-      // user = _user.copyWith(areaQuantity: double.parse(newAreaQuantity));
     }
     if (areaUnit != null) {
       _user.areaUnit = areaUnit;
@@ -154,7 +152,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
     allCrops!.insert(
       indexAmongstAllCrops,
       crop
-      // crop.copyWith(isBookmarked: !crop.isBookmarked),
     );
     cropsToShow = allCrops;
     pricesToShow = allCrops;
@@ -168,18 +165,11 @@ class HomeViewModel extends LanguageSelectionViewModel {
 
   void _syncUserWithFirebase() async {
     final QuerySnapshot result;
-    if (_user.email != null && _user.email!.isNotEmpty) {
-      result = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: _user.email)
-          .get();
-    } else {
-      result = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone_number', isEqualTo: _user.phoneNumber)
-          .get();
-    }
-    final docId = result.docs.first.id;
+    result = await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: id)
+        .get();
+    final docId = result.docs[0].id;
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -197,7 +187,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
   void updateAddress() {
     if (int.tryParse(pincode.text) != null) {
       _user.address.pincode = int.tryParse(pincode.text)!;
-      // user = _user.copyWith.address(pincode: int.tryParse(pincode.text)!);
     }
     if (streetName.text.isNotEmpty) {
       _user.address.streetName = streetName.text;
@@ -288,12 +277,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
     final reverseGeocodedAddress = await LocationService.fetchAddress('en');
 
     if (reverseGeocodedAddress != null) {
-      // user = _user.copyWith.address(
-      //   streetName: reverseGeocodedAddress['street'] ?? '',
-      //   city: reverseGeocodedAddress['city'] ?? '',
-      //   district: reverseGeocodedAddress['district'] ?? '',
-      //   pincode: int.tryParse(reverseGeocodedAddress['postcode']) ?? 0,
-      // );
       _user.address.streetName = reverseGeocodedAddress['street'] ?? '';
       _user.address.city= reverseGeocodedAddress['city'] ?? '';
       _user.address.district= reverseGeocodedAddress['district'] ?? '';
@@ -328,11 +311,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
       languageCode: languageCode,
       location: forecastLocation.text,
     );
-    // TODO: Uncomment
-    // final forecast15 = await WeatherService.getForecast15(
-    //   languageCode,
-    //   location: forecastLocation.text,
-    // );
 
     forecast = forecast15..insert(0, todayWeather);
     setState(ViewState.idle);
@@ -340,7 +318,7 @@ class HomeViewModel extends LanguageSelectionViewModel {
 
   // Initializers
   void onModelReady() async {
-    await fetchAndSyncUser();
+    await _loadUid().whenComplete(() async => await fetchAndSyncUser());
 
     initControllers();
     fetchLocationData();
@@ -350,49 +328,40 @@ class HomeViewModel extends LanguageSelectionViewModel {
     fetchImageUrlMap();
     fetchTextMap();
     fetchCropPrices();
+    notifyListeners();
+  }
+
+  Future<void> _loadUid() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = prefs.getString('uid') ?? "";
+    notifyListeners();
   }
 
   Future<void> fetchAndSyncUser() async {
-    final fireUser = auth.FirebaseAuth.instance.currentUser!;
-
-    final name =
-        fireUser.displayName ?? fireUser.email ?? fireUser.phoneNumber!;
-
     QueryDocumentSnapshot dbUser;
 
-    if (fireUser.email != null && fireUser.email!.isNotEmpty) {
-      final result = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: fireUser.email)
-          .get();
-      dbUser = result.docs.first;
-    } else {
-      final result = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone_number', isEqualTo: fireUser.phoneNumber)
-          .get();
-      dbUser = result.docs.first;
-    }
-
+    final result = await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: id)
+        .get();
+    dbUser = result.docs[0];
     _user = User(
-      phoneNumber: fireUser.phoneNumber,
-      email: fireUser.email,
+      phoneNumber: dbUser.get('phone_number') ?? '',
+      email: dbUser.get('email') ?? '',
       imageUrl:
           'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-      name: name,
-      cropsEn: List<String>.from(dbUser.get('crops-en')),
-      cropsHi: List<String>.from(dbUser.get('crops-hi')),
+      name: dbUser.get('name') ?? '',
+      cropsEn: List<String>.from(dbUser.get('crops-en') ?? []),
+      cropsHi: List<String>.from(dbUser.get('crops-hi') ?? []),
       address: Address(
-        streetName: dbUser.get('address')['street_name'],
-        city: dbUser.get('address')['city'],
-        district: dbUser.get('address')['district'],
+        streetName: dbUser.get('address')['street_name'] ?? '',
+        city: dbUser.get('address')['city'] ?? '',
+        district: dbUser.get('address')['district'] ?? '',
         pincode: (dbUser.get('address')['pincode'] as int),
       ),
     );
-
+    notifyListeners();
     debugPrint('User is initialized');
-
-    // TODO: Sync??
   }
 
   void initControllers() {

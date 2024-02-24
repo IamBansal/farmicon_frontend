@@ -474,7 +474,6 @@ class HomeViewModel extends LanguageSelectionViewModel {
           // "sort[1]": ""
         },
       );
-      // doctorResults = doctorResultListFromJsonList(result.data!);
       notifyListeners();
     } catch (exception) {
       setState(ViewState.error);

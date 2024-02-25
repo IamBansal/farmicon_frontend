@@ -12,13 +12,10 @@ import '../services/location.dart';
 import 'base.dart';
 
 class LoginViewModel extends BaseViewModel {
-  // Controllers
   late PhoneNumber _phoneNumber;
 
-  // Getters
   PhoneNumber get phoneNumber => _phoneNumber;
 
-  // Setters
   set phoneNumber(PhoneNumber newState) {
     _phoneNumber = newState;
     notifyListeners();
@@ -30,7 +27,6 @@ class LoginViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  // Initializer
   void onModelReady() {
     _phoneNumber = PhoneNumber(
       countryISOCode: 'IN',
@@ -39,16 +35,13 @@ class LoginViewModel extends BaseViewModel {
     );
   }
 
-  // Misc
   void sendOtp() {
     Get.toNamed(AppRoutes.otpVerify, arguments: _phoneNumber);
   }
 
   void googleSignIn() async {
     final googleUser = await GoogleSignIn().signIn();
-
     final googleAuth = await googleUser?.authentication;
-
     if (googleAuth != null) {
       final googleAuthCredential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
